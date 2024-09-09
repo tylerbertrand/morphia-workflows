@@ -8,6 +8,9 @@ on:
         type: string
         default: 11
 
+env:
+  DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+
 jobs:
   CodeAudits:
     runs-on: ubuntu-latest
