@@ -73,18 +73,17 @@ jobs:
 
       - name: Build with Tests
         if: ${{ !inputs.saveBuild && !inputs.reuseBuild }}
-        run: ${{ steps.maven.outputs.maven }} -U install ${{ inputs.maven-flags }}
+        run: ${{ steps.maven.outputs.maven }} -U clean install ${{ inputs.maven-flags }}
 
       - name: Build without Tests
         if: inputs.saveBuild
-        run: ${{ steps.maven.outputs.maven }} -U install -DskipTests ${{ inputs.maven-flags }}
+        run: ${{ steps.maven.outputs.maven }} -U clean install -DskipTests ${{ inputs.maven-flags }}
 
       - name: Cache build artifacts
         if: inputs.saveBuild
         uses: actions/cache@v4
         with:
           path: |
-            **/target
             ~/.m2/repository
           key: target-${{ steps.maven-cache-key.outputs.key }}
           restore-keys: target-${{ steps.maven-cache-key.outputs.key }}
@@ -94,7 +93,6 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            **/target
             ~/.m2/repository
           key: target-${{ steps.maven-cache-key.outputs.key }}
           restore-keys: target-${{ steps.maven-cache-key.outputs.key }}
@@ -102,7 +100,7 @@ jobs:
 
       - name: Test without building
         if: inputs.reuseBuild
-        run: ${{ steps.maven.outputs.maven }} surefire:test ${{ inputs.maven-flags }}
+        run: ${{ steps.maven.outputs.maven }} clean test ${{ inputs.maven-flags }}
 
       - name: collect logs
         uses: actions/upload-artifact@v4
