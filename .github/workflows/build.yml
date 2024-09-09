@@ -23,9 +23,6 @@ on:
         required: false
         type: string
         default: ubuntu-latest
-      tests:
-        required: true
-        type: boolean
     secrets:
       DEVELOCITY_ACCESS_KEY:
         required: false
@@ -66,32 +63,8 @@ jobs:
         shell: bash
         run: echo "maven=$( test -f mvnw  && echo "./mvnw" || echo mvn )" >> $GITHUB_OUTPUT
 
-      - name: Restore cached build artifacts
-        if: ${{ inputs.tests }}
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.m2/repository
-          key: target-${{ steps.maven-cache-key.outputs.key }}
-          restore-keys: target-${{ steps.maven-cache-key.outputs.key }}
-          fail-on-cache-miss: false
-
-      - name: Build with Tests
-        if: ${{ inputs.tests }}
+      - name: Build
         run: ${{ steps.maven.outputs.maven }} -U clean install ${{ inputs.maven-flags }}
-
-      - name: Build without Tests
-        if: ${{ !inputs.tests }}
-        run: ${{ steps.maven.outputs.maven }} -U clean install -DskipTests ${{ inputs.maven-flags }}
-
-      - name: Cache build artifacts
-        if: ${{ !inputs.tests }}
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.m2/repository
-          key: target-${{ steps.maven-cache-key.outputs.key }}
-          restore-keys: target-${{ steps.maven-cache-key.outputs.key }}
 
       - name: collect logs
         uses: actions/upload-artifact@v4
